@@ -1,7 +1,15 @@
-# MLE
-Documentation of Thesis: Eurorack Module for Machine Listening
+# ML Eurorack
+Thesis Documentation: Eurorack Module for Machine Listening
 
-## Setup and Background
+# Propsal
+Abstract — Machine listening provides a set of data with which music can be synthesized, modified, or sonified. Real time audio feature extraction opens up new worlds for interactive music, improvisation, and generative composition. This project is especially interested in the intersection of machine listening with interactive performance using DIY embedded systems, integrating machine listening with analog synthesizers.
+
+<details>
+
+<summary>Setup</summary>
+
+### Background tutorials
+
 Please refer to my Embedded Audio tutorials to setup your Raspberry Pi for development, including connecting headless and setting up internet sharing.
 https://github.com/chrislatina/EmbeddedAudio.
 
@@ -11,7 +19,15 @@ Run ```sudo rpi-update``` after making sure you have enough memory available on 
 
 To check your linux version, run ```uname -a```
 
-## Installation
+</details>
+
+
+<details>
+
+<summary>Installation</summary>
+
+### Port Audio
+
 After cloning this repository, download and install port audio. There is a tutorial for compiling on Linux here: http://portaudio.com/docs/v19-doxydocs/compile_linux.html
 
 Once connected to the internet, the easiest way is to use wget pointing to the latest source of port audio.
@@ -24,10 +40,12 @@ Unpack the tgz
 When compiling port audio, do so without Jack. The machine listening firmware is intentioanlly compiled without the flag for Jack. This simplifies reading from and writing to the respective audio cards.
 ```./configure —without-jack```
 
+### Libsound
 Download the libsound-dev libraries. You'll need to be connected to the internet (forward by running headless) to use 
 
 ```sudo apt-get install libasound-dev```
 
+### ALSA
 I suggest using ALSA. The makefile includes all of the following 
 
 ```-lrt -lasound -ljack -lpthread```
@@ -42,12 +60,21 @@ You may need to replace the libportaudio.a file (there are both versions compile
 
 ```cp /PORTAUDIO/DIR/lib/.libs/libportaudio.a /MachineListening/ML_Module/include/portaudio```
 
-## WiringPi
+
+</details>
+
+<details>
+
+<summary>Firmware</summary>
+
+### Wiring Pi
+
 Next you'll need to download and compile the wiringPi library for for reading and writing to and from GPIO pins. This is very straight forward and simply requires running the build script. The library dependencies in the makefile for compiling this library on Raspberry Pi already reference the wiringPi library.
 
 http://wiringpi.com/download-and-install/
 
 Now you can cd into the /MachineListening/ML_Module directory and run `make`
+
 
 ## Setting up your Audio Cards
 
@@ -149,6 +176,13 @@ If correct, the pcm5012a should be assigned to card 0 and the USB-C device assig
 
 dtoverlay=i2s-mmap
 
+</details>
+
+
+<details>
+
+<summary>Optimization</summary>
+
 ## Optimizing Raspbery Pi for realtime streaming Audio
 
 I highy recommend reading this wiki on low latency audio http://wiki.linuxaudio.org/wiki/raspberrypi. Overclocking (http://elinux.org/RPiconfig#Overclocking) is probably not necessary but you can experiment with this if you receive dropouts.
@@ -165,3 +199,4 @@ The second call runs the Machine Listening firmware. The commented commands run 
     #sudo ~/pd/bin/pd -nogui -noadc -rt ~/terminal_tedium/software/D_io_test_pcm5102a.$
     #sudo ~/pd/bin/pd -rt -nogui -verbose ~/terminal_tedium/software/adc_test.pd
 
+</details>
