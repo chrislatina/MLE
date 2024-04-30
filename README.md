@@ -30,7 +30,7 @@ Abstract — Machine listening provides a set of data with which music can be sy
 
 ## Overview
 
-[Add images] 
+<img src="https://github.com/chrislatina/MLE/blob/main/images/Fig.%205%20PCB.png" width="50%"/>
 
 ## Installation
 
@@ -208,3 +208,22 @@ The second call runs the Machine Listening firmware. The commented out commands 
     #sudo ~/pd/bin/pd -rt -nogui -verbose ~/terminal_tedium/software/adc_test.pd
 
 </details>
+
+
+
+### Mappings
+
+<img src="https://github.com/chrislatina/MLE/blob/main/images/Fig.%207%20Mappings.png" width="50%" />
+
+* Potentiometer Knob 1 controls the inter-onset interval ranging between 4 and 400 milliseconds.
+* Potentiometer Knob 2 controls the onset threshold (spectral flux level) ranging between 0 and 8.0
+* Potentiometer Knob 3 controls the maximum FFT bin to analyze (a high pass filter for feature detection).
+* Potentiometer Knob 4 controls the minimum FFT bin to analyze (a low pass filter for feature detection).
+* Potentiometer Knob 5 controls the volume of the feature audio sonification output.
+* Potentiometer Knob 6 controls the volume of the dry audio throughput.
+
+
+### Features 
+
+<img src="https://github.com/chrislatina/MLE/blob/main/images/Table%20IV.%20Spectral%20Flux.png" width="75%"/>
+
