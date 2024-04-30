@@ -30,7 +30,8 @@ Abstract — Machine listening provides a set of data with which music can be sy
 
 ## Overview
 
-<img src="https://github.com/chrislatina/MLE/blob/main/images/Fig.%205%20PCB.png" width="50%"/>
+
+<img src="https://raw.githubusercontent.com/chrislatina/MLE/main/images/Fig.%205%20PCB.png" width="50%"/>
 
 ## Installation
 
@@ -213,7 +214,7 @@ The second call runs the Machine Listening firmware. The commented out commands 
 
 ### Mappings
 
-<img src="https://github.com/chrislatina/MLE/blob/main/images/Fig.%207%20Mappings.png" width="50%" />
+<img src="https://raw.githubusercontent.com/chrislatina/MLE/main/images/Fig.%207%20Mappings.png" width="50%" />
 
 * Potentiometer Knob 1 controls the inter-onset interval ranging between 4 and 400 milliseconds.
 * Potentiometer Knob 2 controls the onset threshold (spectral flux level) ranging between 0 and 8.0
@@ -224,6 +225,5 @@ The second call runs the Machine Listening firmware. The commented out commands 
 
 
 ### Features 
-
-<img src="https://github.com/chrislatina/MLE/blob/main/images/Table%20IV.%20Spectral%20Flux.png" width="75%"/>
+<img src="https://raw.githubusercontent.com/chrislatina/MLE/main/images/Table%20IV.%20Spectral%20Flux.png" width="75%"/>
 
