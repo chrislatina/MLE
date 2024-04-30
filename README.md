@@ -6,25 +6,22 @@ Abstract — Machine listening provides a set of data with which music can be sy
 
 <details>
 
-<summary>Setup</summary>
+<summary>Additional Background</summary>
 
-### Background tutorials
+<h4>Tutorials</h4>
 
 Please refer to my Embedded Audio tutorials to setup your Raspberry Pi for development, including connecting headless and setting up internet sharing.
-https://github.com/chrislatina/EmbeddedAudio.
+<a href="https://github.com/chrislatina/EmbeddedAudio">https://github.com/chrislatina/EmbeddedAudio</a>.
 
 These tutorials run on CCRMA's Satellite build. I've built out the PCM5012a version of the terminal tedium https://github.com/mxmxmx/terminal_tedium. I've setup this environment on a clean Raspian build on the Raspberry Pi Model B+ unit. It is important to update to linux 4.x to allow for i2s mmap configuration for routing audio.
 
-Run ```sudo rpi-update``` after making sure you have enough memory available on your flash drive. If you are worried about using up all of your memory while updating, clean up with locale purge and deb orphan before running the update. More info can be found here: http://www.intraipsum.se/blog/2012/07/14/raspberry-pi-clean-purge/
+<pre>sudo rpi-update</pre> Run the update command after making sure you have enough memory available on your flash drive. If you are worried about using up all of your memory while updating, clean up with locale purge and deb orphan before running the update. More info can be found here: http://www.intraipsum.se/blog/2012/07/14/raspberry-pi-clean-purge/
 
-To check your linux version, run ```uname -a```
+To check your linux version, run <pre>uname -a</pre>
 
 </details>
 
-
-<details>
-
-<summary>Installation</summary>
+## Installation
 
 ### Port Audio
 
@@ -61,11 +58,6 @@ You may need to replace the libportaudio.a file (there are both versions compile
 ```cp /PORTAUDIO/DIR/lib/.libs/libportaudio.a /MachineListening/ML_Module/include/portaudio```
 
 
-</details>
-
-<details>
-
-<summary>Firmware</summary>
 
 ### Wiring Pi
 
@@ -76,7 +68,7 @@ http://wiringpi.com/download-and-install/
 Now you can cd into the /MachineListening/ML_Module directory and run `make`
 
 
-## Setting up your Audio Cards
+### Setting up your Audio Cards
 
 First you'll need to install your hifiberry pcm5012a on pi. Below I've posted to web-references if you need more information.
 
@@ -176,23 +168,21 @@ If correct, the pcm5012a should be assigned to card 0 and the USB-C device assig
 
 dtoverlay=i2s-mmap
 
-</details>
-
 
 <details>
 
-<summary>Optimization</summary>
+<summary>Additional Optimization</summary>
 
-## Optimizing Raspbery Pi for realtime streaming Audio
+<h4>Optimizing Raspbery Pi for realtime streaming Audio</h4>
 
 I highy recommend reading this wiki on low latency audio http://wiki.linuxaudio.org/wiki/raspberrypi. Overclocking (http://elinux.org/RPiconfig#Overclocking) is probably not necessary but you can experiment with this if you receive dropouts.
 
-##Booting your program
+<h4>Booting your program</h4>
 Edit the boot script to run your program by default. You'll need to make sure to run the startup.py script to assign the GPIO pins.
 
-```sudo nano ~/.bash_profile```
+<pre>sudo nano ~/.bash_profile</pre>
 
-The second call runs the Machine Listening firmware. The commented commands run terminal tedium's test patches using pd.
+The second call runs the Machine Listening firmware. The commented out commands optionally run terminal tedium's test patches using pd.
 
     sudo python ~/terminal_tedium/software/pullup.py
     sudo ~/MachineListening/ML_Module/mycc
