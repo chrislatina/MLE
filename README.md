@@ -1,7 +1,7 @@
 # ML Eurorack
 Thesis Documentation: Eurorack Module for Machine Listening
 
-# Propsal
+# Proposal
 Abstract — Machine listening provides a set of data with which music can be synthesized, modified, or sonified. Real time audio feature extraction opens up new worlds for interactive music, improvisation, and generative composition. This project is especially interested in the intersection of machine listening with interactive performance using DIY embedded systems, integrating machine listening with analog synthesizers.
 
 <details>
@@ -10,63 +10,82 @@ Abstract — Machine listening provides a set of data with which music can be sy
 
 <h4>Tutorials</h4>
 
-Please refer to my Embedded Audio tutorials to setup your Raspberry Pi for development, including connecting headless and setting up internet sharing.
-<a href="https://github.com/chrislatina/EmbeddedAudio">https://github.com/chrislatina/EmbeddedAudio</a>.
+<p>Please refer to my Embedded Audio tutorials to setup your Raspberry Pi for development, including connecting headless and setting up internet sharing.
+<a href="https://github.com/chrislatina/EmbeddedAudio">https://github.com/chrislatina/EmbeddedAudio</a>.</p>
 
-These tutorials run on CCRMA's Satellite build. I've built out the PCM5012a version of the terminal tedium https://github.com/mxmxmx/terminal_tedium. I've setup this environment on a clean Raspian build on the Raspberry Pi Model B+ unit. It is important to update to linux 4.x to allow for i2s mmap configuration for routing audio.
+<p>These tutorials run on CCRMA's Satellite build. I've built out the PCM5012a version of the terminal tedium <a href="https://github.com/mxmxmx/terminal_tedium">https://github.com/mxmxmx/terminal_tedium</a>. I've setup this environment on a clean Raspian build on the Raspberry Pi Model B+ unit. It is important to update to linux 4.x to allow for i2s mmap configuration for routing audio.</p>
 
-<pre>sudo rpi-update</pre> Run the update command after making sure you have enough memory available on your flash drive. If you are worried about using up all of your memory while updating, clean up with locale purge and deb orphan before running the update. More info can be found here: http://www.intraipsum.se/blog/2012/07/14/raspberry-pi-clean-purge/
+<pre>sudo rpi-update</pre> 
 
-To check your linux version, run <pre>uname -a</pre>
+<p>Run the update command after making sure you have enough memory available on your flash drive. If you are worried about using up all of your memory while updating, clean up with locale purge and deb orphan before running the update. More info can be found here: <a href="http://www.intraipsum.se/blog/2012/07/14/raspberry-pi-clean-purge/">http://www.intraipsum.se/blog/2012/07/14/raspberry-pi-clean-purge/</a></p>
+
+<p>To check your linux version, run</p>
+<pre>uname -a</pre>
 
 </details>
 
+## Thesis Paper
+
+<a href="https://github.com/chrislatina/MachineListening/blob/master/paper/7100_Latinal_ML_Final.pdf">https://github.com/chrislatina/MachineListening/blob/master/paper/7100_Latinal_ML_Final.pdf</a>
+
+## Overview
+
+[Add images] 
+
 ## Installation
 
-### Port Audio
+<details>
+<summary>Port Audio</summary>
 
-After cloning this repository, download and install port audio. There is a tutorial for compiling on Linux here: http://portaudio.com/docs/v19-doxydocs/compile_linux.html
+<p>After cloning this repository, download and install port audio. There is a tutorial for compiling on Linux here: <a href="http://portaudio.com/docs/v19-doxydocs/compile_linux.html">http://portaudio.com/docs/v19-doxydocs/compile_linux.html</a></p>
 
-Once connected to the internet, the easiest way is to use wget pointing to the latest source of port audio.
+<p>Once connected to the internet, the easiest way is to use wget pointing to the latest source of port audio.</p>
 
-```wget http://www.portaudio.com/archives/pa_stable_v19_20140130.tgz```
+<pre>wget http://www.portaudio.com/archives/pa_stable_v19_20140130.tgz</pre>
 
-Unpack the tgz
-```tar zxvf fileNameHere.tgz```
+<p>Unpack the tgz</p>
+<pre>tar zxvf fileNameHere.tgz</pre>
 
-When compiling port audio, do so without Jack. The machine listening firmware is intentioanlly compiled without the flag for Jack. This simplifies reading from and writing to the respective audio cards.
-```./configure —without-jack```
+<p>When compiling port audio, do so without Jack. The machine listening firmware is intentioanlly compiled without the flag for Jack. This simplifies reading from and writing to the respective audio cards.</p>
+<pre>./configure —without-jack</pre>
 
-### Libsound
-Download the libsound-dev libraries. You'll need to be connected to the internet (forward by running headless) to use 
+</details>
 
-```sudo apt-get install libasound-dev```
+<details>
+<summary>Libsound</summary>
 
-### ALSA
-I suggest using ALSA. The makefile includes all of the following 
+<p>Download the libsound-dev libraries. You'll need to be connected to the internet (forward by running headless) to use </p>
 
-```-lrt -lasound -ljack -lpthread```
+<pre>sudo apt-get install libasound-dev</pre>
+</details>
 
-Use scp to copy a local wav file to your pi. 
-```scp file.wav pi@192.168.2.2:~/file.wav```
+<details>
 
-On the pi, test playback using aplay. Depending upon your audio card setup (explained below) this may play back from the pi's default audio out. 
-```aplay Cello.wav```
+<summary>ALSA</summary>
+<p>I suggest using ALSA. The makefile includes all of the following options </p>
+<pre>-lrt -lasound -ljack -lpthread</pre>
+<p>Use scp to copy a local wav file to your pi.</p>
+<pre>scp file.wav pi@192.168.2.2:~/file.wav</pre>
+<p>On the pi, test playback using aplay. Depending upon your audio card setup (explained below) this may play back from the pi's default audio out. </p>
+<pre>aplay Cello.wav</pre>
+<p>You may need to replace the libportaudio.a file (there are both versions compiled already for raspi and OSX) with the linux version inside /Module/ML_Module/include/portaudio</p>
+<pre>cp /PORTAUDIO/DIR/lib/.libs/libportaudio.a /MachineListening/ML_Module/include/portaudio</pre>
 
-You may need to replace the libportaudio.a file (there are both versions compiled already for raspi and OSX) with the linux version inside /Module/ML_Module/include/portaudio
+</details>
 
-```cp /PORTAUDIO/DIR/lib/.libs/libportaudio.a /MachineListening/ML_Module/include/portaudio```
+<details>
 
+<summary>Wiring Pi</summary>
 
+<p>
+    Next you'll need to download and compile the wiringPi library for for reading and writing to and from GPIO pins. This is very straight forward and simply requires running the build script. The library dependencies in the makefile for compiling this library on Raspberry Pi already reference the wiringPi library. 
+</p>
 
-### Wiring Pi
+<a href="http://wiringpi.com/download-and-install/">http://wiringpi.com/download-and-install/</a>
 
-Next you'll need to download and compile the wiringPi library for for reading and writing to and from GPIO pins. This is very straight forward and simply requires running the build script. The library dependencies in the makefile for compiling this library on Raspberry Pi already reference the wiringPi library.
+<p>Now you can cd into the /MachineListening/ML_Module directory and run <pre>make</pre></p>
 
-http://wiringpi.com/download-and-install/
-
-Now you can cd into the /MachineListening/ML_Module directory and run `make`
-
+</details>
 
 ### Setting up your Audio Cards
 
@@ -167,7 +186,6 @@ If correct, the pcm5012a should be assigned to card 0 and the USB-C device assig
 
 
 dtoverlay=i2s-mmap
-
 
 <details>
 
