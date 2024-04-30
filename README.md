@@ -30,7 +30,6 @@ Abstract — Machine listening provides a set of data with which music can be sy
 
 ## Overview
 
-
 <img src="https://raw.githubusercontent.com/chrislatina/MLE/main/images/Fig.%205%20PCB.png" width="50%"/>
 
 ## Installation
@@ -52,6 +51,8 @@ Abstract — Machine listening provides a set of data with which music can be sy
 
 </details>
 
+---
+
 <details>
 <summary>Libsound</summary>
 
@@ -60,26 +61,32 @@ Abstract — Machine listening provides a set of data with which music can be sy
 <pre>sudo apt-get install libasound-dev</pre>
 </details>
 
-<details>
+---
 
+<details>
 <summary>ALSA</summary>
+    
 <p>I suggest using ALSA. The makefile includes all of the following options </p>
 <pre>-lrt -lasound -ljack -lpthread</pre>
+
 <p>Use scp to copy a local wav file to your pi.</p>
 <pre>scp file.wav pi@192.168.2.2:~/file.wav</pre>
+
 <p>On the pi, test playback using aplay. Depending upon your audio card setup (explained below) this may play back from the pi's default audio out. </p>
 <pre>aplay Cello.wav</pre>
+
 <p>You may need to replace the libportaudio.a file (there are both versions compiled already for raspi and OSX) with the linux version inside /Module/ML_Module/include/portaudio</p>
 <pre>cp /PORTAUDIO/DIR/lib/.libs/libportaudio.a /MachineListening/ML_Module/include/portaudio</pre>
 
 </details>
 
+---
+
 <details>
 
 <summary>Wiring Pi</summary>
-
 <p>
-    Next you'll need to download and compile the wiringPi library for for reading and writing to and from GPIO pins. This is very straight forward and simply requires running the build script. The library dependencies in the makefile for compiling this library on Raspberry Pi already reference the wiringPi library. 
+Next you'll need to download and compile the wiringPi library for for reading and writing to and from GPIO pins. This is very straight forward and simply requires running the build script. The library dependencies in the makefile for compiling this library on Raspberry Pi already reference the wiringPi library. 
 </p>
 
 <a href="http://wiringpi.com/download-and-install/">http://wiringpi.com/download-and-install/</a>
@@ -87,6 +94,8 @@ Abstract — Machine listening provides a set of data with which music can be sy
 <p>Now you can cd into the /MachineListening/ML_Module directory and run <pre>make</pre></p>
 
 </details>
+
+---
 
 ### Setting up your Audio Cards
 
@@ -194,7 +203,7 @@ dtoverlay=i2s-mmap
 
 <h4>Optimizing Raspbery Pi for realtime streaming Audio</h4>
 
-I highy recommend reading this wiki on low latency audio http://wiki.linuxaudio.org/wiki/raspberrypi. Overclocking (http://elinux.org/RPiconfig#Overclocking) is probably not necessary but you can experiment with this if you receive dropouts.
+I highy recommend reading this wiki on low latency audio <a href="http://wiki.linuxaudio.org/wiki/raspberrypi">http://wiki.linuxaudio.org/wiki/raspberrypi</a>. Overclocking (<a href="http://elinux.org/RPiconfig#Overclocking">http://elinux.org/RPiconfig#Overclocking</a>) is probably not necessary but you can experiment with this if you receive dropouts.
 
 <h4>Booting your program</h4>
 Edit the boot script to run your program by default. You'll need to make sure to run the startup.py script to assign the GPIO pins.
@@ -203,10 +212,12 @@ Edit the boot script to run your program by default. You'll need to make sure to
 
 The second call runs the Machine Listening firmware. The commented out commands optionally run terminal tedium's test patches using pd.
 
-    sudo python ~/terminal_tedium/software/pullup.py
-    sudo ~/MachineListening/ML_Module/mycc
-    #sudo ~/pd/bin/pd -nogui -noadc -rt ~/terminal_tedium/software/D_io_test_pcm5102a.$
-    #sudo ~/pd/bin/pd -rt -nogui -verbose ~/terminal_tedium/software/adc_test.pd
+<pre>
+sudo python ~/terminal_tedium/software/pullup.py
+sudo ~/MachineListening/ML_Module/mycc
+#sudo ~/pd/bin/pd -nogui -noadc -rt ~/terminal_tedium/software/D_io_test_pcm5102a.$
+#sudo ~/pd/bin/pd -rt -nogui -verbose ~/terminal_tedium/software/adc_test.pd
+</pre>
 
 </details>
 
