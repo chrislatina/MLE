@@ -2,7 +2,7 @@
 Thesis Documentation: Hardware Module for Machine Listening
 
 # Proposal
-Abstract — Machine listening provides a set of data with which music can be synthesized, modified, or sonified. Real time audio feature extraction opens up new worlds for interactive music, improvisation, and generative composition. This project is especially interested in the intersection of machine listening with interactive performance using DIY embedded systems, integrating machine listening with analog synthesizers.
+Abstract — Machine listening provides a set of data with which music can be synthesized, modified, or sonified. Real time audio feature extraction opens up new worlds for interactive music, improvisation, and generative composition. This project is especially focused on the intersection of machine listening with interactive performance using DIY embedded systems, integrating machine listening with analog synthesizers.
 
 <details>
 
@@ -112,10 +112,10 @@ Next you'll need to download and compile the wiringPi library for for reading an
 
 First you'll need to install your hifiberry pcm5012a on pi. Below I've posted to web-references if you need more information.
 
-<a href="https://www.hifiberry.com/guides/hifiberry-software-configuration/">https://www.hifiberry.com/guides/hifiberry-software-configuration/</a>
-<a href="https://slug.blog.aeminium.org/2015/05/09/raspberry-pi-2-model-b-pcm5102a-i2s/">https://slug.blog.aeminium.org/2015/05/09/raspberry-pi-2-model-b-pcm5102a-i2s/</a>
+<p><a href="https://www.hifiberry.com/guides/hifiberry-software-configuration/">https://www.hifiberry.com/guides/hifiberry-software-configuration/</a></p>
+<p><a href="https://slug.blog.aeminium.org/2015/05/09/raspberry-pi-2-model-b-pcm5102a-i2s/">https://slug.blog.aeminium.org/2015/05/09/raspberry-pi-2-model-b-pcm5102a-i2s/</a></p>
 
-Firs you'll need to remove specific drivers from your device's blacklist. The filename is not necessarily consistent. On my device I edited the following file:
+First you'll need to remove specific drivers from your device's blacklist. The filename is not necessarily consistent. On my device I edited the following file:
 ```sudo nano /etc/modprobe.d/alsa-base-blacklist.conf ```
 
 Comment out all of the following devices
@@ -245,8 +245,12 @@ sudo ~/MachineListening/ML_Module/mycc
 * Potentiometer Knob 5 controls the volume of the feature audio sonification output.
 * Potentiometer Knob 6 controls the volume of the dry audio throughput.
 
-```
 
+<details>
+
+<summary>GPIO Communication</summary>
+
+<pre>
 FeatureCommunication::FeatureCommunication(){
     iFeatureSwitch = 0;
     // ARM specific
@@ -299,7 +303,8 @@ uint16_t FeatureCommunication::readADC(int _channel){ // 12 bit
     #endif
     return 0;
 }
-```
+</pre>
+</details>
 
 ### Features 
 
