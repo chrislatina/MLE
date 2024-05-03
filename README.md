@@ -24,13 +24,24 @@ Abstract — Machine listening provides a set of data with which music can be sy
 
 </details>
 
-## Thesis Paper
+### Terminal Tedium Hardware
+raspberry pi 2 / pi 3 / zero (W) / pi a+ / b+ eurorack stereo codec (wm8731) breakout board *
 
-<a href="https://github.com/chrislatina/MachineListening/blob/master/paper/7100_Latinal_ML_Final.pdf">https://github.com/chrislatina/MachineListening/blob/master/paper/7100_Latinal_ML_Final.pdf</a>
+* 4x digital inputs (> 100k input impedance; threshold > 3V)
+* 2x digital outputs (~ 6V )
+* 6x CV inputs (100k input impedance; 12 bit, +/- 5V range)
+* 2x audio outputs (10VPP, 16bit / 48kHz)
+* 2x audio inputs (50k input impedance, 16bit / 48kHz)
+
+## Thesis Paper & Poster
+
+<a href="https://github.com/chrislatina/MachineListening/blob/master/paper/7100_Latinal_ML_Final.pdf">Paper (PDF)</a>
+
+<a href="https://github.com/chrislatina/MLE/blob/main/images/7100_Latina_Poster.pdf">Poster (PDF)</a>
 
 ## Overview
-
-<img src="https://raw.githubusercontent.com/chrislatina/MLE/main/images/Fig.%205%20PCB.png" width="50%"/>
+<img src="https://raw.githubusercontent.com/chrislatina/MLE/main/images/IMG_3863.jpeg" width="50%"/>
+<img src="https://raw.githubusercontent.com/chrislatina/MLE/main/images/IMG_4963.JPG" width="50%"/>
 
 ## Installation
 
@@ -234,7 +245,122 @@ sudo ~/MachineListening/ML_Module/mycc
 * Potentiometer Knob 5 controls the volume of the feature audio sonification output.
 * Potentiometer Knob 6 controls the volume of the dry audio throughput.
 
+```
+
+FeatureCommunication::FeatureCommunication(){
+    iFeatureSwitch = 0;
+    // ARM specific
+    #ifdef __arm__
+        wiringPiSetupGpio();
+        wiringPiSPISetup(ADC_SPI_CHANNEL, ADC_SPI_SPEED);
+        
+        // GPIO Digital Output
+        pinMode(16, OUTPUT); //Spectral Feature output
+        softPwmCreate(16,0,256);
+        
+        pinMode(26, OUTPUT); //Onset Trigger output
+        //softPwmCreate(26,0,256);
+    
+        // Switches
+        pinMode(23, INPUT); //Switch 1
+        pinMode(24, INPUT); //Switch 2
+        pinMode(25, INPUT); //Switch 3
+    #endif
+}
+
+FeatureCommunication::~FeatureCommunication(){
+    
+}
+
+/* From Terminal Tedium */
+uint16_t adc[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //  store prev.
+uint8_t  map_adc[8] = {5, 2, 7, 6, 3, 0, 1, 4}; // map to panel [1 - 2 - 3; 4 - 5 - 6; 7, 8]
+uint8_t SENDMSG;
+
+uint16_t FeatureCommunication::readADC(int _channel){ // 12 bit
+    #ifdef __arm__
+        uint8_t spi_data[3];
+        uint8_t input_mode = 1; // single ended = 1, differential = 0
+        uint16_t result, tmp;
+        
+        spi_data[0] = 0x04; // start flag
+        spi_data[0] |= (input_mode<<1); // shift input_mode
+        spi_data[0] |= (_channel>>2) & 0x01; // add msb of channel in our first command byte
+        
+        spi_data[1] = _channel<<6;
+        spi_data[2] = 0x00;
+        
+        wiringPiSPIDataRW(ADC_SPI_CHANNEL, spi_data, 3);
+        result = (spi_data[1] & 0x0f)<<8 | spi_data[2];
+        tmp = adc[_channel]; // prev.
+        if ( (result - tmp) > DEADBAND || (tmp - result) > DEADBAND ) { tmp = result ; SENDMSG = 1; }
+        adc[_channel] = tmp;
+        return tmp;
+    #endif
+    return 0;
+}
+```
 
 ### Features 
-<img src="https://raw.githubusercontent.com/chrislatina/MLE/main/images/Table%20IV.%20Spectral%20Flux.png" width="75%"/>
+
+<img src="https://raw.githubusercontent.com/chrislatina/MLE/main/images/Features.png" width="50%"/>
+
+<img src="https://raw.githubusercontent.com/chrislatina/MLE/main/images/Table%20IV.%20Spectral%20Flux.png" width="100%"/>
+
+```
+void SpectralFeatures::calculateSpectralFlux(float diff_sum){
+    //Calculate Spectral Flux
+    flux = diff_sum / (float)(binSize);
+    
+    // Low pass filter (optional)
+    float alpha = 0.0;
+    flux = (1-alpha)*flux + alpha * prevFlux;
+    
+    /* Save previous Spectral Flux */
+    prevFlux = flux;
+}
+
+void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float power, int minBin, int maxBin){
+    centroid = 0.0;
+    for (int i=minBin; i<maxBin; i++) {
+        centroid += i*spectrum[i]*spectrum[i];
+    }
+    
+    try {
+        centroid = centroid / (power);
+    } catch (std::logic_error e) {
+        centroid = 0.0;
+    }
+    
+    centroid = (centroid / (float) binSize);
+    centroid = centroid;
+    
+    // Low pass filter
+    float alpha = 0.5;
+    centroid = (1-alpha)*centroid + alpha * prevCentroid;
+    
+    prevCentroid = centroid;
+}
+
+void SpectralFeatures::calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum) {
+    if((spectrum_sum / (float) binSize) > minThresh){
+        try {
+            flatness = exp(log_spectrum_sum / (float) binSize) / (spectrum_sum / (float) binSize);
+        } catch (std::logic_error e) {
+            flatness = 0.0;
+            return;
+        }
+    }
+    else{
+        flatness = 0.0;
+    }
+    
+    // Low pass filter
+    float alpha = 0.5;
+    flatness = (1-alpha)*flatness + alpha * flatness;
+    prevFlatness = flatness;
+}
+```
+
+<a href="https://github.com/chrislatina/MLE/raw/main/images/IMG_5328_720p.mov">log output video</a>
 
