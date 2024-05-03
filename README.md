@@ -1,5 +1,5 @@
 # ML Eurorack
-Thesis Documentation: Eurorack Module for Machine Listening
+Thesis Documentation: Hardware Module for Machine Listening
 
 # Proposal
 Abstract — Machine listening provides a set of data with which music can be synthesized, modified, or sonified. Real time audio feature extraction opens up new worlds for interactive music, improvisation, and generative composition. This project is especially interested in the intersection of machine listening with interactive performance using DIY embedded systems, integrating machine listening with analog synthesizers.
@@ -112,8 +112,8 @@ Next you'll need to download and compile the wiringPi library for for reading an
 
 First you'll need to install your hifiberry pcm5012a on pi. Below I've posted to web-references if you need more information.
 
-https://www.hifiberry.com/guides/hifiberry-software-configuration/
-https://slug.blog.aeminium.org/2015/05/09/raspberry-pi-2-model-b-pcm5102a-i2s/
+<a href="https://www.hifiberry.com/guides/hifiberry-software-configuration/">https://www.hifiberry.com/guides/hifiberry-software-configuration/</a>
+<a href="https://slug.blog.aeminium.org/2015/05/09/raspberry-pi-2-model-b-pcm5102a-i2s/">https://slug.blog.aeminium.org/2015/05/09/raspberry-pi-2-model-b-pcm5102a-i2s/</a>
 
 Firs you'll need to remove specific drivers from your device's blacklist. The filename is not necessarily consistent. On my device I edited the following file:
 ```sudo nano /etc/modprobe.d/alsa-base-blacklist.conf ```
@@ -259,7 +259,7 @@ FeatureCommunication::FeatureCommunication(){
         softPwmCreate(16,0,256);
         
         pinMode(26, OUTPUT); //Onset Trigger output
-        //softPwmCreate(26,0,256);
+        softPwmCreate(26,0,256);
     
         // Switches
         pinMode(23, INPUT); //Switch 1
@@ -308,6 +308,62 @@ uint16_t FeatureCommunication::readADC(int _channel){ // 12 bit
 <img src="https://raw.githubusercontent.com/chrislatina/MLE/main/images/Table%20IV.%20Spectral%20Flux.png" width="100%"/>
 
 ```
+void SpectralFeatures::extractFeatures(float* spectrum)
+{
+    power = 0.0;
+    spectrum_sum = 0.0;
+    spectrum_abs_sum = 0.0;
+    halfwave = 0.0;
+    log_spectrum_sum = 0.0;
+    float diff_sum = 0.0;
+    
+    for (int i=minBin; i<maxBin; i++) {
+        // Get power difference between consecutive spectra
+        diff_sum  += ((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0)*((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0);
+        
+        // Half wave recitify the diff.
+        halfwave += ((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0);
+        //Calculate the square
+        power += spectrum[i] * spectrum[i];
+        
+        //Sum of the magnitude spectrum
+        spectrum_sum += spectrum[i];
+        
+        //Sum of the absolute value of the magnitude spectrum
+        spectrum_abs_sum += fabsf(spectrum[i]);
+        
+        //Logarithmic sum of the magnitude spectrum
+        log_spectrum_sum += log(spectrum[i]);
+        
+        //Square of the magnitude spectrum
+        spectrum_sq[i] = spectrum[i] * spectrum[i];
+    }
+    
+    /* Update fifo */
+    setFifo(spectrum,binSize);
+    
+    if (!checkSilence(power)){
+        // Calculate Spectral Flux
+        calculateSpectralFlux(halfwave);
+        
+        // Calculate Spectral Roloff
+        calculateSpectralRolloff(spectrum, spectrum_sum, 0.85);
+        
+        //Calculate RMS
+        calculateRMS(power);
+        
+        //Calculate Spectral Crest
+        calculateSpectralCrest(spectrum, spectrum_abs_sum);
+        
+        //Calculate Spectral Centroid
+        calculateSpectralCentroid(spectrum, power, minBin, maxBin);
+        
+        //Calculate Spectral Flatness
+        calculateSpectralFlatness(log_spectrum_sum, spectrum_sum);
+        
+    }
+}
+
 void SpectralFeatures::calculateSpectralFlux(float diff_sum){
     //Calculate Spectral Flux
     flux = diff_sum / (float)(binSize);
